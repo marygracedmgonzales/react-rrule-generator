@@ -1,11 +1,15 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import moment from 'moment';
-import DateTime from 'react-datetime';
 import 'moment/min/locales';
+
+import DateFnsUtils from '@date-io/date-fns';
+import { MuiPickersUtilsProvider, DatePicker } from '@material-ui/pickers';
+
 
 import { DATE_TIME_FORMAT } from '../../constants/index';
 import translateLabel from '../../utils/translateLabel';
+
 
 const EndOnDate = ({
   id,
@@ -14,7 +18,7 @@ const EndOnDate = ({
     options,
   },
   handleChange,
-  translations
+  translations,
 }) => {
   const CustomCalendar = options.calendarComponent;
 
@@ -45,32 +49,36 @@ const EndOnDate = ({
               handleChange(editedEvent);
             }}
           />
-          : <DateTime
-            {...calendarAttributes}
-            inputProps={
-              {
-                id: `${id}-datetime`,
-                name: 'end.onDate.date',
-                readOnly: true,
-              }
+          :
+          <MuiPickersUtilsProvider utils={DateFnsUtils}>
+            <DatePicker
+              required
+              variant="inline"
+              inputVariant="outlined"
+              label="Select start date"
+              name="startDate"
+              format="dd/MM/yyyy"
+              autoOk="true"
+              value={calendarAttributes.value}
+              inputProps={
+            {
+              id: `${id}-datetime`,
+              name: 'end.onDate.date',
+              readOnly: true,
             }
-            locale={translateLabel(translations, 'locale')}
-            timeFormat={false}
-            viewMode="days"
-            closeOnSelect
-            closeOnTab
-            required
-            onChange={(inputDate) => {
-              const editedEvent = {
-                target: {
-                  value: moment(inputDate).format(DATE_TIME_FORMAT),
-                  name: 'end.onDate.date',
-                },
-              };
+          }
+              onChange={(inputDate) => {
+            const editedEvent = {
+              target: {
+                value: moment(inputDate).format(DATE_TIME_FORMAT),
+                name: 'end.onDate.date',
+              },
+            };
 
-              handleChange(editedEvent);
-            }}
-          />
+            handleChange(editedEvent);
+          }}
+            />
+          </MuiPickersUtilsProvider>
       }
     </div>
   );
